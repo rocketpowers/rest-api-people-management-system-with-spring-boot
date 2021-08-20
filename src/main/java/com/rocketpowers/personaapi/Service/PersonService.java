@@ -1,6 +1,8 @@
 package com.rocketpowers.personaapi.Service;
 
+import com.rocketpowers.personaapi.Dto.Request.PersonDTO;
 import com.rocketpowers.personaapi.Entity.Person;
+import com.rocketpowers.personaapi.Mapper.PersonMapper;
 import com.rocketpowers.personaapi.Repository.PersonRepository;
 import com.rocketpowers.personaapi.Response.MessageResponseDTO;
 import lombok.AllArgsConstructor;
@@ -17,15 +19,25 @@ public class PersonService {
 
     private PersonRepository personRepository;
 
+    private final PersonMapper personMapper = PersonMapper.INSTANCE;
+
     @Autowired
     public PersonService(PersonRepository personRepository) {
         this.personRepository = personRepository;
 
     }
 
+    public MessageResponseDTO createPerson(PersonDTO personDTO) {
+        Person personToSave = Person.builder()
+                .firstName(personDTO.getFirstName())
+                .lastName(personDTO.getLastName())
+                .birthDate(personDTO.getBirthDate())
+                .build();
 
-    public MessageResponseDTO createPerson(Person person) {
-        Person savedPerson = personRepository.save(person);
+
+
+
+        Person savedPerson = personRepository.save(personToSave);
         return MessageResponseDTO
                 .builder()
                 .message("created person with id" + savedPerson.getId())

@@ -1,7 +1,7 @@
 package com.rocketpowers.personaapi.Controller;
 
+import com.rocketpowers.personaapi.Dto.Request.PersonDTO;
 import com.rocketpowers.personaapi.Entity.Person;
-import com.rocketpowers.personaapi.Repository.PersonRepository;
 import com.rocketpowers.personaapi.Response.MessageResponseDTO;
 import com.rocketpowers.personaapi.Service.PersonService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,8 +23,8 @@ public class PersonController {
 
 @PostMapping
 @ResponseStatus(HttpStatus.CREATED)
-    public MessageResponseDTO createPerson(@RequestBody Person person){
-        return  personService.createPerson(person);
+    public MessageResponseDTO createPerson(@RequestBody PersonDTO personDTO){
+        return  personService.createPerson(personDTO);
 
   }
 
