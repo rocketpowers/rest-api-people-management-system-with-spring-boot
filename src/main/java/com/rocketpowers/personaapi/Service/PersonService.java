@@ -5,13 +5,11 @@ import com.rocketpowers.personaapi.Entity.Person;
 import com.rocketpowers.personaapi.Mapper.PersonMapper;
 import com.rocketpowers.personaapi.Repository.PersonRepository;
 import com.rocketpowers.personaapi.Response.MessageResponseDTO;
-import lombok.AllArgsConstructor;
+import com.rocketpowers.personaapi.Exception.PersonNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -28,14 +26,7 @@ public class PersonService {
     }
 
     public MessageResponseDTO createPerson(PersonDTO personDTO) {
-        Person personToSave = Person.builder()
-                .firstName(personDTO.getFirstName())
-                .lastName(personDTO.getLastName())
-                .birthDate(personDTO.getBirthDate())
-                .build();
-
-
-
+        Person personToSave = PersonMapper.toModel(personDTO);
 
         Person savedPerson = personRepository.save(personToSave);
         return MessageResponseDTO
@@ -43,8 +34,32 @@ public class PersonService {
                 .message("created person with id" + savedPerson.getId())
                 .build();
 
-}
+    }
+
+    public List<PersonDTO> listAll() {
+        List<Person> allPeople = personRepository.findAll();
+        return allPeople.stream()
+                .map(personMapper::toDTO)
+                .collect(Collectors.toList());
+
+    }
+
+    public PersonDTO findById(long id) throws PersonNotFoundException {
+        Person person = verifyIfExists(id);
 
 
+            return personMapper.toDTO(person);
+        }
 
-}
+    private Person verifyIfExists(long id) throws PersonNotFoundException {
+        return personRepository.findById(id)
+                .orElseThrow(() -> new PersonNotFoundException(id));
+    }
+
+    public void delete (Long id) throws PersonNotFoundException{
+        verifyIfExists(id);
+
+        personRepository.deleteById(id);
+        }
+
+    }
